@@ -1,0 +1,4 @@
+# Python
+python/.venv/
+python/.vscode
+python/__pycache__
