@@ -26,9 +26,10 @@ def introduction():
 
 def request_input():
     # Requests user provide input. Then parses input into either a conversation request or a description request
+    global debug
     user_input = input("\n>>> ").strip()
     if user_input == '':
-        print("/nNo command found. Please try again. Type \"/help\" for a list of commands.")
+        print("\nNo command found. Please try again. Type \"/help\" for a list of commands.")
         return
     input_list = user_input.split()
     command = input_list.pop(0).lower()
@@ -41,15 +42,21 @@ def request_input():
             output = generator.continue_text(command_body, "conversation")
             # parsed_output = parse_output(output)
             parsed_output = output
+            if debug:
+                return
             gradual_print(parsed_output)
         case "/examine":
             output = generator.continue_text(command_body, "description")
             # parsed_output = parse_output(output)
             parsed_output = output
+            if debug:
+                return
             gradual_print(parsed_output)
+        case "/breakpoint":
+            if debug:
+                print("Breakpoint requested.")
         case _:
             gradual_print("/nIncorrect command. Type \"/help\" for a list of commands.")
-
 
 def parse_output(generator_output):
     # Take the chat generation json output and parses it to be easier to read
@@ -58,11 +65,14 @@ def parse_output(generator_output):
 def gradual_print(text):
     # Processes print requests gradually to print words one-by-one
     print(text)
-    return
 
 if __name__ == "__main__":
     # To-Do: put context and messages back into the generator object and have the generator be the model of the system
     # To-Do: main will be the controller and view
+
+    debug = True
+    if debug:
+        generator.debug = True
 
     generator.caching = False
     if generator.caching:
@@ -77,7 +87,5 @@ if __name__ == "__main__":
 
     while True:
         request_input()
-
-
 
     print("END") 

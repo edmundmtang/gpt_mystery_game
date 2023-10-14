@@ -20,7 +20,9 @@ cache_file = "cache.json"
 cache = {}
 
 context = {}
-messages = {}
+messages = []
+
+debug = False
 
 # serialize the whole cache to a local json file
 def save_cache():
@@ -71,6 +73,8 @@ def cache_wrapper(func):
 
 @cache_wrapper
 def do_chat_completion(messages, base_context, stop=None, max_tokens=1000):
+    global debug
+    global api_input
     model = CHAT_COMPLETION_MODEL
     context = []
     for i, message in enumerate(messages):
@@ -80,6 +84,8 @@ def do_chat_completion(messages, base_context, stop=None, max_tokens=1000):
         })
     assert context[-1]["role"] == "user"
     context = [{"role": "system", "content": base_context}] + context
+    if debug:
+        api_input = context
     for _ in range(1, 10):
         try:
             response = openai.ChatCompletion.create(
@@ -96,7 +102,12 @@ def do_chat_completion(messages, base_context, stop=None, max_tokens=1000):
             sleep(60)
     else:
         raise Exception("rate limit keeps timing out")
-    return [response["choices"][0]["message"]["content"], response["usage"]["total_tokens"]]
+    token_counts = {
+        "prompt_tokens": response["usage"]["prompt_tokens"],
+        "completion_tokens": response["usage"]["completion_tokens"],
+        "total_tokens": response["usage"]["total_tokens"]
+    }
+    return [response["choices"][0]["message"]["content"], token_counts]
 
 def load_context(context_file):
     try:
@@ -108,8 +119,7 @@ def load_context(context_file):
         "base": raw_context["base"],
         "conversation": raw_context["conversation"],
         "description": raw_context["description"],
-        "extra_conversation": "",
-        "extra_description": ""
+        "extra": ""
     }
     return context
 
@@ -120,23 +130,31 @@ def replace_name():
     context["conversation"] = re.sub("\[player name\]", player_name, context["conversation"])
     context["description"] = re.sub("\[player name\]", player_name, context["description"])
 
-def continue_text(input_text, conv_type, max_output_tokens=1000):
+def continue_text(input_text, text_type, max_output_tokens=1000):
     global messages
     global context
-    if conv_type == "conversation":
-        target_messages = messages["conversation"]
-        target_messages.append(format_converse_input(input_text))
-        target_context = context["base"] + "\n" + context["conversation"] + "\n" + context["extra_conversation"]
-    elif conv_type == "description":
-        target_messages = messages["description"]
-        target_messages.append(format_examine_input(input_text))
-        target_context = context["base"] + "\n" + context["description"] + "\n" + context["extra_description"]
+    global debug
+    if text_type == "conversation":
+        messages.append(format_converse_input(input_text))
+        target_context = context["base"] + "\n" + context["conversation"] + "\n" + context["extra"]
+    elif text_type == "description":
+        messages.append(format_examine_input(input_text))
+        target_context = context["base"] + "\n" + context["description"] + "\n" + context["extra"]
     else:
-        raise Exception("No valid conv_type provided. Please indicate either 'conversation' or 'description'.")
-    output_message, output_length = do_chat_completion(target_messages, target_context, max_tokens=max_output_tokens)
-    target_messages.append(output_message)
-    if output_length > 12000: # To-Do - Come up with a proper heuristic for estimating summarization compression and needed space
-        summarize_text(target_messages, context, conv_type)
+        raise Exception("No valid text_type provided. Please indicate either 'conversation' or 'description'.")
+    output_message, token_counts = do_chat_completion(messages, target_context, max_tokens=max_output_tokens)
+    if debug:
+        print("CONTINUING TEXT")
+        print("===============")
+        if text_type == "conversation":
+            print("Player says: ", input_text, "\n")
+        elif text_type == "description":
+            print("Player examines ", input_text, "\n")
+        print(output_message)
+        print("\nTotal tokens: ", token_counts["total_tokens"], "\n")
+    messages.append(output_message)
+    if token_counts["total_tokens"] > 12000: # To-Do - Come up with a proper heuristic for estimating summarization compression and needed space
+        summarize_text()
     return output_message
 
 def format_converse_input(raw_text):
@@ -146,57 +164,77 @@ def format_converse_input(raw_text):
 def format_examine_input(raw_text):
     return "I examine " + raw_text + "."
 
-def summarize_text(conv_type):
+def summarize_text():
     global messages
     global context
-    if conv_type == "conversation":
-        instruction = "Summarize the conversation so far."
-        target_extra = "extra_conversation"
-        target_context = context["conversation"] + "\n" + context[target_extra]
-    elif conv_type == "description":
-        instruction = "Summarize the descriptions so far."
-        target_extra = "extra_description"
-        target_context = context["description"] + "\n" + context[target_extra]
-    else:
-        raise Exception("No valid conv_type provided. Please indicate either 'conversation' or 'description'.")
+    global debug
+    instruction = "Summarize the above conversations and descriptions. Do so in plain English."
+    target_context = "You are a bot designed to summarize text.\n" + context["extra"]
     target_messages = messages.copy()
     target_messages.append(instruction)
-    extra_context, _ = do_chat_completion(target_messages, target_context)
-    context[target_extra] = extra_context
+    extra_context, token_counts = do_chat_completion(target_messages, target_context, max_tokens=4000)
+    if debug:
+        print("SUMMARIZING TEXT")
+        print("================")
+        print(extra_context, "\n")
+        print("Prompt tokens:", token_counts["prompt_tokens"])
+        print("Completion tokens:", token_counts["completion_tokens"])
+        print("Total tokens:", token_counts["total_tokens"])
+    context["extra"] = extra_context
+    messages = []
     return extra_context
 
 def initialize():
     global context
     global messages
     context = load_context("context.json")
-    messages = {
-        "conversation": [],
-        "description": []
-    }
 
 if __name__ == "__main__":
     
     caching = False
+    debug = True
+    api_input = {}
     if caching:
         cache = {}
         load_cache()
-        clear_stored_cache()
 
     initialize()
     player_name = "Anne Holloway"
     replace_name()
 
+    if debug:
+        print("\nBASE CONTEXT")
+        print("============\n")
+        print(context["base"])
+        print("\nCONVERSATION CONTEXT")
+        print("====================\n")
+        print(context["conversation"])
+        print("\nDESCRIPTION CONTEXT")
+        print("===================\n")
+        print(context["description"])
+        print()
+
     input_message = "Greetings, I am detective Anne Holloway. Could you please tell me what has transpired here tonight?"
     continue_text(input_message, "conversation")
-    # input_message = "Who is here tonight?"
-    # continue_text(input_message, messages, context, "conversation")
-    # input_message = "Who would be interested in stealing the sapphire?"
-    # continue_text(input_message, messages, context, "conversation")
-    # input_message = "Is there any suspicious activity you could tell me about?"
-    # continue_text(input_message, messages, context, "conversation")
-    # input_message = "Everyone, tell me what you were doing prior to the theft."
-    # continue_text(input_message, messages, context, "conversation")
-    # input_message = "The thief is Miss Dawson!"
-    # continue_text(input_message, messages, context, "conversation")
-
+    input_message = "Who is here tonight?"
+    continue_text(input_message, "conversation")
+    input_message = "Who would be interested in stealing the sapphire?"
+    continue_text(input_message, "conversation")
+    input_message = "Is there any suspicious activity you could tell me about?"
+    continue_text(input_message, "conversation")
+    input_message = "Everyone, tell me what you were doing prior to the theft."
+    continue_text(input_message, "conversation")
+    input_message = "The thief is Miss Dawson!"
+    continue_text(input_message, "conversation")
+    examine_input = "the room"
+    continue_text(examine_input, "description")
+    examine_input = "the case"
+    continue_text(examine_input, "description")
+    examine_input = "the people"
+    continue_text(examine_input, "description")
+    examine_input = "Mr. Blackwood's wrist"
+    continue_text(examine_input, "description")
+    examine_input = "Lady Eleanor's figure"
+    continue_text(examine_input, "description")
+    summarize_text()
     print("END")
