@@ -16,6 +16,8 @@ except:
 #     print("There is no OpenAI organization ID on this machine.")
 
 CHAT_COMPLETION_MODEL = "gpt-3.5-turbo-16k"
+
+caching = False
 cache_file = "cache.json"
 cache = {}
 
@@ -143,6 +145,9 @@ def continue_text(input_text, text_type, max_output_tokens=1000):
     else:
         raise Exception("No valid text_type provided. Please indicate either 'conversation' or 'description'.")
     output_message, token_counts = do_chat_completion(messages, target_context, max_tokens=max_output_tokens)
+    # To-Do: Verify formatting of output_message here based on text_type. Retry
+    # text generation up to 3 times if invalid. If it fails 3 times raise an error.
+    # Possibly provide extra or repeat instructions if it is failing badly.
     if debug:
         print("CONTINUING TEXT")
         print("===============")
@@ -151,7 +156,7 @@ def continue_text(input_text, text_type, max_output_tokens=1000):
         elif text_type == "description":
             print("Player examines ", input_text, "\n")
         print(output_message)
-        print("\nTotal tokens: ", token_counts["total_tokens"], "\n")
+        print("\nTotal tokens: ", token_counts["total_tokens"])
     messages.append(output_message)
     if token_counts["total_tokens"] > 12000: # To-Do - Come up with a proper heuristic for estimating summarization compression and needed space
         summarize_text()
