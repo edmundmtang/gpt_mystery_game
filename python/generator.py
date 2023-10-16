@@ -144,10 +144,13 @@ def continue_text(input_text, text_type, max_output_tokens=1000):
         target_context = context["base"] + "\n" + context["description"] + "\n" + context["extra"]
     else:
         raise Exception("No valid text_type provided. Please indicate either 'conversation' or 'description'.")
-    output_message, token_counts = do_chat_completion(messages, target_context, max_tokens=max_output_tokens)
-    # To-Do: Verify formatting of output_message here based on text_type. Retry
-    # text generation up to 3 times if invalid. If it fails 3 times raise an error.
-    # Possibly provide extra or repeat instructions if it is failing badly.
+    for _ in range(3):
+        output_message, token_counts = do_chat_completion(messages, target_context, max_tokens=max_output_tokens)
+        verified = verify_text(output_message, text_type)
+        if verified:
+            break
+    if not verified:
+        raise Exception("Chat bot failed to generate properly formatted output.")
     if debug:
         print("CONTINUING TEXT")
         print("===============")
@@ -161,6 +164,19 @@ def continue_text(input_text, text_type, max_output_tokens=1000):
     if token_counts["total_tokens"] > 12000: # To-Do - Come up with a proper heuristic for estimating summarization compression and needed space
         summarize_text()
     return output_message
+
+def verify_text(message, text_type):
+    json_object = json.loads(message)
+    if text_type == "conversation":
+        text_elements = ["speaker", "status", "content"]
+    elif text_type == "description":
+        text_elements = ["description"]
+    for item in json_object:
+        if not all(element in text_elements for element in item):
+            return False
+    return True
+            
+
 
 def format_converse_input(raw_text):
     global player_name
