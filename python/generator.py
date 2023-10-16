@@ -169,11 +169,14 @@ def format_converse_input(raw_text):
 def format_examine_input(raw_text):
     return "I examine " + raw_text + "."
 
-def summarize_text():
+def summarize_text(is_end=False):
     global messages
     global context
     global debug
-    instruction = "Summarize the above conversations and descriptions. Do so in plain English."
+    if is_end:
+        instruction = "Summarize the ending to the above events, and then ask me if I have really uncovered the truth of this story. Do so in plain English."
+    else:
+        instruction = "Summarize the above conversations and descriptions. Do so in plain English."
     target_context = "You are a bot designed to summarize text.\n" + context["extra"]
     target_messages = messages.copy()
     target_messages.append(instruction)

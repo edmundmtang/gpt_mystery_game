@@ -2,26 +2,35 @@ import generator
 import json
 import string
 import argparse
+import re
+from time import sleep
 
 def request_name():
     # Ask the user for their name.
-    generator.player_name = input("You are a detective. Type your name and press Enter: ").strip()
+    print_by_word("You are a detective. Type your name and press Enter: ")
+    generator.player_name = input().strip()
     print("")
     generator.replace_name()
     return
 
 instructions = """/help           : Show available commands.
 /say [text]     : Say something. [text] is what you're saying.
-/examine [text] : Examine something. [text] is the thing to examine."""
+/examine [text] : Examine something. [text] is the thing to examine.
+/exit           : Get a summary of the ending then exit the game."""
+
+debug_instructions = """\n=== Debug Commands ===
+/breakpoint     : If using an IDE, can trigger a breakpoint.
+/summarize      : Force a generator.summarize() call."""
 
 def introduction():
     # Prints introduction to the game and provides instructions on how to interact with the game
     # /say - the main character speaks
     # /examine - the main character examines something
     # 
-    introduction_text = "The setting is a picturesque town in the countryside. It is the late 19th century and you are the famous detective " + generator.player_name + ". You happen to be traveling through town when news reaches you of a theft at the Thornton Manor. Your aide is called upon to solve this mystery.\n"
+    introduction_text = "The setting is a picturesque town in the countryside. It is the late 19th century and you are the famous detective " + generator.player_name + ". You happen to be traveling through town when news reaches you of a theft at the Thornton Manor. Your aide is called upon to solve this mystery."
     print_by_word(introduction_text)
-    input("Press Enter to continue >>>")
+    print_by_word("\n\nPress Enter to continue >>>")
+    input()
 
     instruction_text = "\nTo interact with the scenario you will need to type out all of your commands following a particular format. When you see >>>, the game is waiting for an input. All commands begin with a \"/\", followed by the command and then instructions. For example, if you want to introduce yourself, the command is:\n\n>>> /say Hello, I am Detective Anne Holloway.\n\nYou can interact with the scenario either by saying something or by examining something. To show the available commands, type \"/help\"."
     print_by_word(instruction_text)
@@ -29,7 +38,7 @@ def introduction():
 def request_input():
     # Requests user provide input. Then parses input into either a conversation request or a description request
     global debug
-    user_input = input("\n>>> ").strip()
+    user_input = input("\n\n>>> ").strip()
     if user_input == '':
         print("\nNo command found. Please try again. Type \"/help\" for a list of commands.")
         return
@@ -39,7 +48,9 @@ def request_input():
     print()
     match command:
         case "/help":
-            print(instructions)
+            print(instructions, end = '')
+            if debug:
+                print(debug_instructions, end = '')
             return 0
         case "/say":
             text_type = "conversation"
@@ -58,7 +69,6 @@ def request_input():
                 incorrect_command()
             return 0
         case "/exit":
-            print("Thank you for playing the game! Did you figure out all the mysteries of the scenario and unravel all the truths?")
             return 1
         case _:
             incorrect_command()
@@ -93,15 +103,19 @@ def print_by_block(text_list):
     for text_block in text_list:
         print_by_word(text_block)
         if text_block != last_text_block:
-            input("\nContinue >>>")
+            input("\n\nContinue >>>")
             print()
 
 def print_by_word(text):
-    print(text)
+    text_list = re.split('[ ]', text)
+    n_total = len(text_list)
+    for n, text in enumerate(text_list, start=1):
+        print(text, end='')
+        sleep(0.03)
+        if n != n_total:
+            print(' ', end='')
 
 if __name__ == "__main__":
-
-
     parser = argparse.ArgumentParser(description="Mystery Game driven by chat AI")
     parser.add_argument('-d', '--debug', dest="debug", action='store_true', 
                         help="enable debug features and verbose outputs")
@@ -134,3 +148,5 @@ if __name__ == "__main__":
     while True:
         if request_input() == 1:
             break
+
+    print_by_block([generator.summarize_text(is_end=True)])
