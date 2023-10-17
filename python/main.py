@@ -27,7 +27,7 @@ def introduction():
     # /say - the main character speaks
     # /examine - the main character examines something
     # 
-    introduction_text = "The setting is a picturesque town in the countryside. It is the late 19th century and you are the famous detective " + generator.player_name + ". You happen to be traveling through town when news reaches you of a theft at the Thornton Manor. Your aide is called upon to solve this mystery."
+    introduction_text = "The setting is a picturesque town in the countryside. It is the late 19th century and you are the famous detective " + generator.player_name + ". You happen to be traveling through town when news reaches you of a theft at the Thornton Manor. Your aid is called upon to solve this mystery."
     print_by_word(introduction_text)
     print_by_word("\n\nPress Enter to continue >>>")
     input()
