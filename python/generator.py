@@ -166,13 +166,16 @@ def continue_text(input_text, text_type, max_output_tokens=1000):
     return output_message
 
 def verify_text(message, text_type):
+    global debug
     json_object = json.loads(message)
     if text_type == "conversation":
         text_elements = ["speaker", "status", "content"]
     elif text_type == "description":
         text_elements = ["description"]
     for item in json_object:
-        if not all(element in text_elements for element in item):
+        if not all(element in item.keys() for element in text_elements):
+            if debug:
+                print("Format verification failed. Attempting to regenerate response.")
             return False
     return True
             
@@ -240,25 +243,25 @@ if __name__ == "__main__":
 
     input_message = "Greetings, I am detective Anne Holloway. Could you please tell me what has transpired here tonight?"
     continue_text(input_message, "conversation")
-    input_message = "Who is here tonight?"
-    continue_text(input_message, "conversation")
-    input_message = "Who would be interested in stealing the sapphire?"
-    continue_text(input_message, "conversation")
-    input_message = "Is there any suspicious activity you could tell me about?"
-    continue_text(input_message, "conversation")
-    input_message = "Everyone, tell me what you were doing prior to the theft."
-    continue_text(input_message, "conversation")
-    input_message = "The thief is Miss Dawson!"
-    continue_text(input_message, "conversation")
-    examine_input = "the room"
-    continue_text(examine_input, "description")
-    examine_input = "the case"
-    continue_text(examine_input, "description")
-    examine_input = "the people"
-    continue_text(examine_input, "description")
-    examine_input = "Mr. Blackwood's wrist"
-    continue_text(examine_input, "description")
-    examine_input = "Lady Eleanor's figure"
-    continue_text(examine_input, "description")
-    summarize_text()
+    # input_message = "Who is here tonight?"
+    # continue_text(input_message, "conversation")
+    # input_message = "Who would be interested in stealing the sapphire?"
+    # continue_text(input_message, "conversation")
+    # input_message = "Is there any suspicious activity you could tell me about?"
+    # continue_text(input_message, "conversation")
+    # input_message = "Everyone, tell me what you were doing prior to the theft."
+    # continue_text(input_message, "conversation")
+    # input_message = "The thief is Miss Dawson!"
+    # continue_text(input_message, "conversation")
+    # examine_input = "the room"
+    # continue_text(examine_input, "description")
+    # examine_input = "the case"
+    # continue_text(examine_input, "description")
+    # examine_input = "the people"
+    # continue_text(examine_input, "description")
+    # examine_input = "Mr. Blackwood's wrist"
+    # continue_text(examine_input, "description")
+    # examine_input = "Lady Eleanor's figure"
+    # continue_text(examine_input, "description")
+    # summarize_text()
     print("END")
