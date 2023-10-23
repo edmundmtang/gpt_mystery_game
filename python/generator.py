@@ -179,8 +179,6 @@ def verify_text(message, text_type):
             return False
     return True
             
-
-
 def format_converse_input(raw_text):
     global player_name
     return "{\n\"speaker\": \"Detective " + player_name + "\",\n\"content\": \"" + raw_text + "\"\n}"

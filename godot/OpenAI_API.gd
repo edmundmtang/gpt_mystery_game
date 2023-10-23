@@ -16,6 +16,8 @@ var max_tokens: int = 1024
 var temperature: float = 0.7
 var context: Dictionary
 
+var message_cache: Array
+
 signal chat_response(message)
 
 func _ready() -> void:
@@ -23,14 +25,10 @@ func _ready() -> void:
     add_child(http_request)
     http_request.request_completed.connect(_on_request_completed)
 
-func do_chat_completion(message) -> void:
+func do_chat_completion(messages) -> void:
+    message_cache = messages
     var body = JSON.stringify({
-        "messages" : [
-        {
-        "role": "user",
-        "content": message
-        }
-        ],
+        "messages" : messages,
         "temperature": temperature,
         "max_tokens": max_tokens,
         "model": model
@@ -38,8 +36,12 @@ func do_chat_completion(message) -> void:
     var error = http_request.request(chat_url, out_headers, HTTPClient.METHOD_POST, body)
 
     if error != 0:
+        print("Error no: ", error)
         push_error("Something went wrong with the chat completion.")
 
-func _on_request_completed(_result, _responseCode, _headers, body):
-    chat_response.emit(body.get_string_from_utf8())
+func _on_request_completed(result, responseCode, _headers, body):
+    if result != 0 or responseCode >= 400:
+        push_error("Encountered a server-side error. [Result: " + result + "] [Response Code: " + responseCode + "]")
+        # To-Do: Depending on the error type attempt to regenerate response
+    chat_response.emit(JSON.parse_string(body.get_string_from_utf8())["choices"][0]["message"])
 
