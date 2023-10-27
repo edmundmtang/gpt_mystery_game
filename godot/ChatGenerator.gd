@@ -13,17 +13,19 @@ enum TextType {
     ACTION
 }
 
+signal display_text(content: Dictionary, type: int)
+
 func _ready() -> void:
     openai_api = OpenAI_API.new()
     add_child(openai_api)
     load_context("context.json")
     insert_player_name()
 
-    var a_message = format_input("Hello. I am Detective Anne Holloway.", TextType.CONVERSATION)
-
-    messages.append(a_message)
-
-    continue_text(TextType.CONVERSATION)
+#    var a_message = format_input("Hello. I am Detective Anne Holloway.", TextType.CONVERSATION)
+#
+#    messages.append(a_message)
+#
+#    continue_text(TextType.CONVERSATION)
 
 func load_context(context_file: String) -> void:
     var json_file = FileAccess.open(context_file, FileAccess.READ)

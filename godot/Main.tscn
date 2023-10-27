@@ -1,9 +1,31 @@
-[gd_scene load_steps=3 format=3 uid="uid://bbed3mbf0psg5"]
+[gd_scene load_steps=4 format=3 uid="uid://dggdyyxnff8bj"]
 
-[ext_resource type="Script" path="res://Main.gd" id="1_mi00h"]
-[ext_resource type="PackedScene" uid="uid://bs5drdlrq1u87" path="res://ChatGenerator.tscn" id="2_oouwi"]
+[ext_resource type="PackedScene" uid="uid://dcapqng5urvxd" path="res://DisplayBox.tscn" id="2_8sbjh"]
+[ext_resource type="PackedScene" uid="uid://bs5drdlrq1u87" path="res://ChatGenerator.tscn" id="2_m1dq2"]
+[ext_resource type="PackedScene" uid="uid://bwvcrvsm8mibt" path="res://InputBox.tscn" id="3_6jfpu"]
 
-[node name="Main" type="Node2D"]
-script = ExtResource("1_mi00h")
+[node name="Main" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
 
-[node name="ChatGenerator" parent="." instance=ExtResource("2_oouwi")]
+[node name="Display" type="VSplitContainer" parent="."]
+layout_mode = 2
+split_offset = 600
+dragger_visibility = 2
+
+[node name="DisplayBox" parent="Display" instance=ExtResource("2_8sbjh")]
+layout_mode = 2
+size_flags_vertical = 1
+
+[node name="InputBox" parent="Display" instance=ExtResource("3_6jfpu")]
+layout_mode = 2
+size_flags_vertical = 1
+
+[node name="ChatGenerator" parent="." instance=ExtResource("2_m1dq2")]
