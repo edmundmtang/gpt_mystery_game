@@ -15,17 +15,14 @@ theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 3
 theme_override_constants/margin_bottom = 3
 
-[node name="Display" type="VSplitContainer" parent="."]
+[node name="Display" type="VBoxContainer" parent="."]
 layout_mode = 2
-split_offset = 600
-dragger_visibility = 2
 
 [node name="DisplayBox" parent="Display" instance=ExtResource("2_8sbjh")]
 layout_mode = 2
-size_flags_vertical = 1
+size_flags_stretch_ratio = 3.0
 
 [node name="InputBox" parent="Display" instance=ExtResource("3_6jfpu")]
 layout_mode = 2
-size_flags_vertical = 1
 
 [node name="ChatGenerator" parent="." instance=ExtResource("2_m1dq2")]
