@@ -20,7 +20,7 @@ layout_mode = 2
 
 [node name="DisplayBox" parent="Display" instance=ExtResource("2_8sbjh")]
 layout_mode = 2
-size_flags_stretch_ratio = 3.0
+size_flags_stretch_ratio = 2.5
 
 [node name="InputBox" parent="Display" instance=ExtResource("3_6jfpu")]
 layout_mode = 2
