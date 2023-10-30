@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://bwvcrvsm8mibt"]
+[gd_scene load_steps=2 format=3 uid="uid://bwvcrvsm8mibt"]
+
+[ext_resource type="Script" path="res://InputBox.gd" id="1_3r0kw"]
 
 [node name="InputBox" type="MarginContainer"]
 anchors_preset = 15
@@ -8,6 +10,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource("1_3r0kw")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
