@@ -1,7 +1,11 @@
 extends Node
 
+var debug := true
+
 var context: Dictionary
 var messages: Array[Dictionary]
+var display_messages: Array
+var display_index := 0
 var player_name: String = "Anne Holloway"
 
 func _ready() -> void:
@@ -20,3 +24,7 @@ func insert_player_name() -> void:
     context["base"] = regex.sub(context["base"], player_name, true)
     context["conversation"] = regex.sub(context["conversation"], player_name, true)
     context["description"] = regex.sub(context["description"], player_name, true)
+
+func add_new_output_message(new_message: String) -> void:
+    messages.append(new_message)
+    # parse new_message and also add to display messages

@@ -1,16 +1,17 @@
+class_name ChatGenerator
 extends Node
 
 var openai_api: OpenAI_API
-
 var retry_counter := 0
 
 enum TextType {
     CONVERSATION,
     DESCRIPTION,
+    SUMMARY,
     ACTION
 }
 
-signal display_text(content: Dictionary, type: int)
+signal new_output_message(text: String)
 
 func _ready() -> void:
     openai_api = OpenAI_API.new()
@@ -28,6 +29,10 @@ func format_input(text: String, type: int) -> Dictionary:
 
 func format_output(text: String) -> Dictionary:
     return { "role": "assistant", "content": text}
+
+func add_input_message(text: String, type: int) -> void:
+    var new_message := format_input(text, type)
+    GameState.messages.append(new_message)
 
 func prepare_messages(type: int) -> Array:
     # Format messages for chat completion call
@@ -55,13 +60,16 @@ func continue_text(type: int) -> void:
     var new_message = await openai_api.chat_response
     if verify_output_message(new_message["content"], type):
         # True: add to the ongoing list of messages and then do something to display
-        GameState.messages.append(new_message)
+        new_output_message.emit(new_message)
     else:
         # False: increase the retry_counter -> if too high push_error
         # otherwise, call continue_text again & hope we randomly do better
         retry_counter += 1
         if retry_counter > 3:
             push_error("Failed to generate a properly formatted response after 3 attempts")
+            # To-Do Instead of pushing an error, show a message suggesting the
+            # user attempt to reword their request while also removing the most
+            # recent request
         continue_text(type)
     retry_counter = 0
 

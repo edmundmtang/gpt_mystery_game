@@ -3,6 +3,10 @@ extends MarginContainer
 # Main is acting as the input bus, but we might create a separate
 # node specifically for handling inputs later
 
+@onready var display_box = $Display/DisplayBox
+@onready var input_box = $Display/InputBox
+@onready var chat_generator = $ChatGenerator
+
 func _input(event) -> void:
     if event is InputEventKey:
         parse_key_input(event)
@@ -27,9 +31,21 @@ func parse_key_input(input_event) -> void:
                 # Take the text in the input box and use it as a command
                 # Then clear the text box
                 print("Enter command")
+                input_box.process_command()
                 pass
     if input_event.keycode == 4194308: # Backspace key
         if input_event.ctrl_pressed == true:
             # Go back in messsages
             print("Go back in messages")
             pass
+
+func _ready() -> void:
+    input_box.command_event.connect(
+        func(text, type) -> void:
+            chat_generator.add_input_message(text, type)
+            chat_generator.continue_text(type)
+    )
+    chat_generator.new_output_message.connect(
+        func(text) -> void:
+            GameState.messages.append(text)
+    )
