@@ -11,7 +11,8 @@ enum TextType {
     ACTION
 }
 
-signal new_output_message(text: String)
+signal new_input_message(text: String, type: int)
+signal new_output_message(text: String, type: int)
 
 func _ready() -> void:
     openai_api = OpenAI_API.new()
@@ -32,7 +33,7 @@ func format_output(text: String) -> Dictionary:
 
 func add_input_message(text: String, type: int) -> void:
     var new_message := format_input(text, type)
-    GameState.messages.append(new_message)
+    new_input_message.emit(text, type)
 
 func prepare_messages(type: int) -> Array:
     # Format messages for chat completion call

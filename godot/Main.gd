@@ -45,7 +45,11 @@ func _ready() -> void:
             chat_generator.add_input_message(text, type)
             chat_generator.continue_text(type)
     )
+    chat_generator.new_input_message.connect(
+        func(text, type) -> void:
+            GameState.messages.append(text)
+    )
     chat_generator.new_output_message.connect(
-        func(text) -> void:
+        func(text, type) -> void:
             GameState.messages.append(text)
     )
