@@ -5,12 +5,11 @@ var debug := true
 var context: Dictionary
 var messages: Array[Dictionary]
 var display_messages: Array
-var display_index := 0
+var display_index := -1
 var player_name: String = "Anne Holloway"
 
 func _ready() -> void:
     load_context("context.json")
-    insert_player_name()
 
 func load_context(context_file: String) -> void:
     var json_file = FileAccess.open(context_file, FileAccess.READ)
@@ -28,3 +27,6 @@ func insert_player_name() -> void:
 func add_new_output_message(new_message: String) -> void:
     messages.append(new_message)
     # parse new_message and also add to display messages
+
+func fetch_display_message() -> String:
+    return display_messages[display_index]

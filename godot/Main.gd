@@ -40,16 +40,18 @@ func parse_key_input(input_event) -> void:
             pass
 
 func _ready() -> void:
+    get_tree().get_root().min_size = Vector2i(350, 400) # window min size
     input_box.command_event.connect(
         func(text, type) -> void:
             chat_generator.add_input_message(text, type)
-            chat_generator.continue_text(type)
+#            chat_generator.continue_text(type)
     )
     chat_generator.new_input_message.connect(
-        func(text, type) -> void:
-            GameState.messages.append(text)
+        func(message, type) -> void:
+            print(message)
+            GameState.messages.append(message)
     )
     chat_generator.new_output_message.connect(
-        func(text, type) -> void:
-            GameState.messages.append(text)
+        func(message, type) -> void:
+            GameState.messages.append(message)
     )

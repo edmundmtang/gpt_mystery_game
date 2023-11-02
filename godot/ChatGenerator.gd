@@ -33,7 +33,7 @@ func format_output(text: String) -> Dictionary:
 
 func add_input_message(text: String, type: int) -> void:
     var new_message := format_input(text, type)
-    new_input_message.emit(text, type)
+    new_input_message.emit(new_message, type)
 
 func prepare_messages(type: int) -> Array:
     # Format messages for chat completion call
