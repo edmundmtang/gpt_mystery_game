@@ -36,7 +36,7 @@ func process_command() -> void:
         if GameState.debug:
             print("COMMAND: [", command, "]")
             print("RAW TEXT: [", command_text, "]")
-        if command == "/say" or command == "/examine":
+        if command == "/say" or command == "/examine" or command == "":
             if GameState.has_unread_messages:
                 accept_event()
                 navigation_event.emit(DisplayBox.navigation.NEXT)
@@ -44,14 +44,15 @@ func process_command() -> void:
             elif GameState.generating_output:
                 accept_event()
                 return
-            GameState.generating_output = true
         match command:
             "/help":
                 print(instructions)
             "/say":
+                GameState.generating_output = true
                 var text_type = ChatGenerator.TextType.CONVERSATION
                 command_event.emit(command_text, text_type)
             "/examine":
+                GameState.generating_output = true
                 var text_type = ChatGenerator.TextType.DESCRIPTION
                 command_event.emit(command_text, text_type)
             "/previous":
