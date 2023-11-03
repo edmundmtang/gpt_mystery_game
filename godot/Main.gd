@@ -67,17 +67,27 @@ func handle_navigation_event(type: int) -> void:
     match type:
         DisplayBox.navigation.INSTRUCTIONS:
             display_box.show_instructions()
+            if GameState.debug:
+                print("Navigation Event: INSTRUCTIONS")
         DisplayBox.navigation.BACK:
             GameState.go_previous()
             display_box.update_display()
+            if GameState.debug:
+                print("Navigation Event: BACK")
         DisplayBox.navigation.NEXT:
             GameState.go_next()
             display_box.update_display()
+            if GameState.debug:
+                print("Navigation Event: NEXT")
         DisplayBox.navigation.CURRENT:
-            pass
+            if GameState.debug:
+                print("Navigation Event: CURRENT")
         DisplayBox.navigation.SUMMARY:
-            pass
+            if GameState.debug:
+                print("Navigation Event: SUMMARY")
         DisplayBox.navigation.RESTART:
-            pass
+            if GameState.debug:
+                print("Navigation Event: RESTART")
         DisplayBox.navigation.EXIT:
-            pass
+            if GameState.debug:
+                print("Navigation Event: EXIT")

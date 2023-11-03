@@ -84,7 +84,7 @@ func format_message(message: Dictionary, type: int) -> String:
 
 func do_update_navigation() -> void:
     if GameState.debug:
-        print(GameState.display_index, "|", GameState.max_display_index)
+        print("Current Location: ", GameState.display_index, "/", GameState.max_display_index)
     if GameState.display_index <= 0:
         back_button.disabled = true
     else:

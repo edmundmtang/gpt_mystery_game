@@ -29,13 +29,12 @@ func process_command() -> void:
         update_player_name()
         set_default_placeholder_text()
         navigation_event.emit(DisplayBox.navigation.INSTRUCTIONS)
+        if GameState.debug:
+            print("Player name set to: " + GameState.player_name)
     else:
         var input_array := Array(text_box.text.strip_edges().split(" "))
         var command : String = input_array.pop_front().to_lower()
         var command_text = " ".join(input_array)
-        if GameState.debug:
-            print("COMMAND: [", command, "]")
-            print("RAW TEXT: [", command_text, "]")
         if command == "/say" or command == "/examine" or command == "":
             if GameState.has_unread_messages:
                 accept_event()
@@ -44,6 +43,8 @@ func process_command() -> void:
             elif GameState.generating_output:
                 accept_event()
                 return
+        if GameState.debug:
+            print("COMMAND: [", command, "] [", command_text, "]")
         match command:
             "/help":
                 print(instructions)
