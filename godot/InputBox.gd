@@ -2,7 +2,8 @@ extends MarginContainer
 
 signal command_event(text: String, type: int)
 signal navigation_event(event_id: int)
-@onready var text_box = $VBoxContainer/ScrollContainer/TextEdit
+@onready var text_box = %TextBox
+@onready var send_button = %SendButton
 
 var instructions := """=== Text Commands ===
 /help           : Show available commands.
@@ -35,6 +36,15 @@ func process_command() -> void:
         if GameState.debug:
             print("COMMAND: [", command, "]")
             print("RAW TEXT: [", command_text, "]")
+        if command == "/say" or command == "/examine":
+            if GameState.has_unread_messages:
+                accept_event()
+                navigation_event.emit(DisplayBox.navigation.NEXT)
+                return
+            elif GameState.generating_output:
+                accept_event()
+                return
+            GameState.generating_output = true
         match command:
             "/help":
                 print(instructions)
@@ -45,7 +55,7 @@ func process_command() -> void:
                 var text_type = ChatGenerator.TextType.DESCRIPTION
                 command_event.emit(command_text, text_type)
             "/previous":
-                navigation_event.emit(DisplayBox.navigation.PREVIOUS)
+                navigation_event.emit(DisplayBox.navigation.BACK)
             "/next":
                 navigation_event.emit(DisplayBox.navigation.NEXT)
             "/current":
@@ -56,6 +66,14 @@ func process_command() -> void:
                 navigation_event.emit(DisplayBox.navigation.RESTART)
             "/exit":
                 navigation_event.emit(DisplayBox.navigation.EXIT)
+            _:
+                if GameState.has_unread_messages:
+                    accept_event()
+                    navigation_event.emit(DisplayBox.navigation.NEXT)
+                    return
+                else:
+                    print("Invalid command")
+                    pass
     call_deferred("clear_text")
 
 func update_player_name():
@@ -70,3 +88,9 @@ func set_waiting_for_player_name():
 
 func set_default_placeholder_text():
     text_box.placeholder_text = "Waiting for command...\nUse /help to see commands and other info."
+
+func update_confirmation_button() -> void:
+    if GameState.has_unread_messages:
+        send_button.text = "Continue"
+    else:
+        send_button.text = "Send"

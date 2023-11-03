@@ -17,25 +17,19 @@ func parse_key_input(input_event) -> void:
     if input_event.pressed == false:
         return
     if input_event.keycode == 4194309: # Enter key
-        if input_event.ctrl_pressed == true:
-            print("Go forward in messages")
+        if input_event.ctrl_pressed:
             handle_navigation_event(DisplayBox.navigation.NEXT)
+            accept_event()
         else:
-            if input_event.shift_pressed == true:
-                # Actually do nothing because if we're in the text box
-                # then we'd just make a new line
+            if input_event.shift_pressed:
+                # Actually do nothing and just make a new line
                 pass
             else:
-                # Take the text in the input box and use it as a command
-                # Then clear the text box
-                print("Enter command")
                 input_box.process_command()
-                pass
     if input_event.keycode == 4194308: # Backspace key
         if input_event.ctrl_pressed == true:
-            # Go back in messsages
-            print("Go back in messages")
-            handle_navigation_event(DisplayBox.navigation.PREVIOUS)
+            handle_navigation_event(DisplayBox.navigation.BACK)
+            accept_event()
 
 func _ready() -> void:
     get_tree().get_root().min_size = Vector2i(350, 400) # window min size
@@ -46,6 +40,14 @@ func _ready() -> void:
     input_box.navigation_event.connect(
         func(type: int) -> void:
             handle_navigation_event(type)
+    )
+    display_box.navigation_event.connect(
+        func(type: int) -> void:
+            handle_navigation_event(type)
+    )
+    display_box.update_navigation.connect(
+        func() -> void:
+            input_box.update_confirmation_button()
     )
     chat_generator.new_display_message.connect(
         func(messages: Array[Dictionary], type: int) -> void:
@@ -65,7 +67,7 @@ func handle_navigation_event(type: int) -> void:
     match type:
         DisplayBox.navigation.INSTRUCTIONS:
             display_box.show_instructions()
-        DisplayBox.navigation.PREVIOUS:
+        DisplayBox.navigation.BACK:
             GameState.go_previous()
             display_box.update_display()
         DisplayBox.navigation.NEXT:

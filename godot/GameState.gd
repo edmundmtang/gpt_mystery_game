@@ -8,6 +8,8 @@ var display_messages: Array
 var display_index := -1
 var max_display_index := -1
 var player_name: String
+var has_unread_messages := false
+var generating_output := false
 
 func _ready() -> void:
     load_context("context.json")
@@ -43,6 +45,9 @@ func go_previous() -> void:
 func go_next() -> void:
     display_index += 1
     if display_index > max_display_index: display_index = max_display_index
+
+func go_to(index: int) -> void:
+    display_index = clampi(index, 0, max_display_index)
 
 func restart_game() -> void:
     load_context("context.json")

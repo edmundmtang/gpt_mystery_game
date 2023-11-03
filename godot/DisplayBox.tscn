@@ -53,9 +53,13 @@ layout_mode = 2
 size_flags_horizontal = 4
 
 [node name="BackButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
+disabled = true
 text = "Back"
 
 [node name="NextButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
+disabled = true
 text = "Next"

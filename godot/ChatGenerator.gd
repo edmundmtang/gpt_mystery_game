@@ -79,6 +79,7 @@ func continue_text(type: int) -> void:
         # True: add to the ongoing list of messages and then do something to display
         new_display_message.emit(parse_output_for_display(new_output), type)
         new_output_message.emit(new_output, type)
+        GameState.generating_output = false
     else:
         # False: increase the retry_counter -> if too high push_error
         # otherwise, call continue_text again & hope we randomly do better
@@ -111,7 +112,7 @@ func verify_output_message(message, type) -> bool:
     return true
 
 func parse_output_for_display(output: Dictionary) -> Array[Dictionary]:
-    var res : Array[Dictionary]
+    var res : Array[Dictionary] = []
     # we're probably struggling to properly parse this output so we'd
     # need to break it down into a couple of steps
     var data = JSON.parse_string(output["content"])
