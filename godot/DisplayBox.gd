@@ -3,10 +3,11 @@ extends MarginContainer
 
 var conversation: Array # An array of the messages that should be displayed.
 var introduction: String = "The setting is during the 19th century at a picturesque town in the countryside. You are a famous detective that happened to be traveling through town when news reaches you of a theft at Thornton Manor. Your aid is called upon to solve this mystery.\n\nBefore we begin, please type your name below and press enter."
-
+var instruction_index := 999 # Initialize to arbitrarily large number
 @onready var text_box = %RichTextLabel
 
 enum navigation {
+    INSTRUCTIONS,
     HELP,
     PREVIOUS,
     NEXT,
@@ -22,23 +23,34 @@ func _ready():
 func start_scenario():
     # Clear player name
     # Set input box to state for receiving a new name
-    multi_update_display([{"description": introduction}], ChatGenerator.TextType.DESCRIPTION)
+    add_display_messages([{"description": introduction}], ChatGenerator.TextType.DESCRIPTION)
 
-func multi_update_display(messages: Array[Dictionary], type: int) -> void:
+func show_instructions():
+    if len(GameState.display_messages) > instruction_index:
+        go_to(instruction_index) # Instructions should always be at index 1
+    else:
+        var instructions: String = "As Detective " + GameState.player_name + ", you have arrived at Thornton Manor to help solve a mysterious theft. To interact with the scenario you will need to type out commands in a particular format in the box below. All commands begin with a slash followed by the command itself then further details or instructions. For example, if you want to introduce yourself, it would look something like this:\n\n/say Hello, I am Detective " + GameState.player_name + ".\n\nYou can interact with the scenario by either saying something (/say) or examining something (/examine). For more commands, hotkeys, and further information, type '/help'."
+        add_display_messages([{"description": instructions}], ChatGenerator.TextType.DESCRIPTION)
+        instruction_index = len(GameState.display_messages) - 1 # is the newest message
+
+func add_display_messages(messages: Array[Dictionary], type: int) -> void:
     # Format and add messages array to GameState.display_messages
     for message in messages:
         var formatted_message = format_message(message, type)
-        GameState.display_messages.append(formatted_message)
+        GameState.add_display_message(formatted_message)
     # Figure out the appropriate max index based on number of new messages
     # Update display message index by 1 then use update_display() to update view
     GameState.display_index += 1
-    update_display(GameState.fetch_display_message())
+    update_display()
 
-func update_display(message: String) -> void:
-    # parse the dictionary of text information in message and then
+func go_to(index: int) -> void:
+    GameState.display_index = index
+    update_display()
+
+func update_display() -> void:
     # change what is displayed in text_box
     # should do this in a gradual manner that looks nice + maybe has sound
-    text_box.text = message
+    text_box.text = GameState.fetch_display_message()
 
 func format_message(message: Dictionary, type: int) -> String:
     # take message as a dictionary then format it as BBCode to use in display
@@ -46,5 +58,9 @@ func format_message(message: Dictionary, type: int) -> String:
     match type:
         ChatGenerator.TextType.DESCRIPTION:
             res = "[left]" + message["description"] + "[/left]"
+        ChatGenerator.TextType.CONVERSATION:
+            res = "[left][u][b]" + message["speaker"] + "[/b][/u]"
+            if message.has("status"):
+                res += "\n[i]" + message["status"] + "[/i]"
+            res += "\n" + message["content"] + "[/left]"
     return res
-

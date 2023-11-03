@@ -1,8 +1,5 @@
 extends MarginContainer
 
-var has_player_name := false
-var standard_placeholder := "Waiting for input...\nUse/help to see commands."
-
 signal command_event(text: String, type: int)
 signal navigation_event(event_id: int)
 @onready var text_box = $VBoxContainer/ScrollContainer/TextEdit
@@ -23,9 +20,14 @@ Enter           : Send command.
 CTRL+Backspace  : Go to the previous page in the story.
 CTRL+Enter      : Go to the next page in the story."""
 
+func _ready() -> void:
+    set_waiting_for_player_name()
+
 func process_command() -> void:
-    if !has_player_name:
+    if GameState.player_name == "":
         update_player_name()
+        set_default_placeholder_text()
+        navigation_event.emit(DisplayBox.navigation.INSTRUCTIONS)
     else:
         var input_array := Array(text_box.text.strip_edges().split(" "))
         var command : String = input_array.pop_front().to_lower()
@@ -57,8 +59,14 @@ func process_command() -> void:
     call_deferred("clear_text")
 
 func update_player_name():
-        GameState.player_name = " ".join(Array(text_box.text.strip_edges().split(" "))) # Clean white space
-        GameState.insert_player_name()
+    GameState.player_name = " ".join(Array(text_box.text.strip_edges().split(" "))) # Clean white space
+    GameState.insert_player_name()
 
 func clear_text() -> void:
     text_box.clear()
+
+func set_waiting_for_player_name():
+    text_box.placeholder_text = "Enter player name here."
+
+func set_default_placeholder_text():
+    text_box.placeholder_text = "Waiting for command...\nUse /help to see commands and other info."

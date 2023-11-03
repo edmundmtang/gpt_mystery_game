@@ -6,7 +6,8 @@ var context: Dictionary
 var messages: Array[Dictionary]
 var display_messages: Array
 var display_index := -1
-var player_name: String = "Anne Holloway"
+var max_display_index := -1
+var player_name: String
 
 func _ready() -> void:
     load_context("context.json")
@@ -30,3 +31,22 @@ func add_new_output_message(new_message: String) -> void:
 
 func fetch_display_message() -> String:
     return display_messages[display_index]
+
+func add_display_message(message: String) -> void:
+    display_messages.append(message)
+    max_display_index += 1
+
+func go_previous() -> void:
+    display_index -= 1
+    if display_index < 0: display_index = 0
+
+func go_next() -> void:
+    display_index += 1
+    if display_index > max_display_index: display_index = max_display_index
+
+func restart_game() -> void:
+    load_context("context.json")
+    messages = []
+    display_messages = []
+    display_index = -1
+    player_name = ""

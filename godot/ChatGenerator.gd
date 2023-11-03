@@ -11,29 +11,45 @@ enum TextType {
     ACTION
 }
 
-signal new_input_message(text: String, type: int)
-signal new_output_message(text: String, type: int)
+signal new_display_message(text: Array[Dictionary], type: int)
+signal new_input_message(text: Dictionary, type: int)
+signal new_output_message(text: Dictionary, type: int)
 
 func _ready() -> void:
     openai_api = OpenAI_API.new()
     add_child(openai_api)
 
-func format_input(text: String, type: int) -> Dictionary:
+func format_input_for_llm(text: String, type: int) -> Dictionary:
     var content: String
-    if type == TextType.CONVERSATION:
-        content = "{\n\"speaker\": \"Detective " + GameState.player_name + "\",\n\"content\": \"" + text + "\"\n}"
-    elif type == TextType.DESCRIPTION:
-        content = "I examine " + text
-    else:
-        push_error("Invalid text type provided.")
+    match type:
+        TextType.CONVERSATION:
+            content = "{\n\"speaker\": \"Detective " + GameState.player_name + "\",\n\"content\": \"" + text + "\"\n}"
+        TextType.DESCRIPTION:
+            content = "I examine " + text
+        _:
+            push_error("Invalid text type provided.")
     return {"role": "user", "content": content}
+
+func format_input_for_display(text: String, type: int) -> Array[Dictionary]:
+    var res: Array[Dictionary]
+    match type:
+        TextType.CONVERSATION:
+            res = [{"speaker": "Detective " + GameState.player_name,
+                "content": text}]
+        TextType.DESCRIPTION:
+            res = [{"description": "You examine " + text + "."}]
+        _:
+            push_error("Invalid text type provided.")
+    return res
 
 func format_output(text: String) -> Dictionary:
     return { "role": "assistant", "content": text}
 
 func add_input_message(text: String, type: int) -> void:
-    var new_message := format_input(text, type)
-    new_input_message.emit(new_message, type)
+    var display_message := format_input_for_display(text, type)
+    new_display_message.emit(display_message, type)
+    var llm_message := format_input_for_llm(text, type)
+    new_input_message.emit(llm_message, type)
 
 func prepare_messages(type: int) -> Array:
     # Format messages for chat completion call
@@ -58,10 +74,11 @@ func get_base_context(type: int) -> String:
 func continue_text(type: int) -> void:
     var message_array := prepare_messages(type)
     openai_api.do_chat_completion(message_array)
-    var new_message = await openai_api.chat_response
-    if verify_output_message(new_message["content"], type):
+    var new_output = await openai_api.chat_response
+    if verify_output_message(new_output["content"], type):
         # True: add to the ongoing list of messages and then do something to display
-        new_output_message.emit(new_message)
+        new_display_message.emit(parse_output_for_display(new_output), type)
+        new_output_message.emit(new_output, type)
     else:
         # False: increase the retry_counter -> if too high push_error
         # otherwise, call continue_text again & hope we randomly do better
@@ -92,3 +109,12 @@ func verify_output_message(message, type) -> bool:
             else:
                 return false
     return true
+
+func parse_output_for_display(output: Dictionary) -> Array[Dictionary]:
+    var res : Array[Dictionary]
+    # we're probably struggling to properly parse this output so we'd
+    # need to break it down into a couple of steps
+    var data = JSON.parse_string(output["content"])
+    for item in data:
+        res.append(item)
+    return res
