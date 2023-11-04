@@ -4,7 +4,7 @@ var debug := true
 
 var context: Dictionary
 var messages: Array[Dictionary]
-var display_messages: Array
+var display_messages: Array[Dictionary]
 var display_index := -1
 var max_display_index := -1
 var player_name: String
@@ -32,17 +32,17 @@ func insert_player_name() -> void:
 func add_new_output_message(new_message: String) -> void:
     messages.append(new_message)
 
-func fetch_display_message() -> String:
+func fetch_display_message() -> Dictionary:
     return display_messages[display_index]
 
 func add_display_message(message: String, type: int) -> void:
     if (type == ChatGenerator.TextType.DESCRIPTION
         and last_message_type == ChatGenerator.TextType.DESCRIPTION or last_message_type == ChatGenerator.TextType.DESCRIPTION_REQUEST):
-        var last_message = display_messages.pop_back()
+        var last_message = display_messages.pop_back()["content"]
         last_message += "\n\n" + message
-        display_messages.append(last_message)
+        display_messages.append({"content": last_message, "is_new": true})
     else:
-        display_messages.append(message)
+        display_messages.append({"content": message, "is_new": true})
         max_display_index += 1
     last_message_type = type
 

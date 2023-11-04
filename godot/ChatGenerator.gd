@@ -90,17 +90,37 @@ func continue_text(type: int) -> void:
         # otherwise, call continue_text again & hope we randomly do better
         retry_counter += 1
         if retry_counter > 3:
-            push_error("Failed to generate a properly formatted response after 3 attempts")
+            print("Failed to generate a properly formatted response after 3 attempts")
             # To-Do Instead of pushing an error, show a message suggesting the
             # user attempt to reword their request while also removing the most
             # recent request
+            DisplayBox.navigation_event.emit(DisplayBox.navigation.LM_ERROR)
         continue_text(type)
     retry_counter = 0
+
+func reduce_context() -> void:
+    # Ask LLM to summarize the events so far and then replace existing context
+    # with the reduced context
+    pass
+
+func summarize_text(is_end: bool = false) -> String:
+    # Ask the LLM to summarize the events so far as simple text
+    if is_end:
+        pass
+    else:
+        pass
+    return ""
 
 func verify_output_message(message, type) -> bool:
     # Take JSON string and verify that it has the necessary keys
     var data = JSON.parse_string(message)
     var targets := []
+    print(data)
+    if data == null or !(data is Array):
+        if GameState.debug:
+            print("Output message could not be parsed. Output message below.")
+            print(message)
+        return false
     if type == TextType.CONVERSATION:
         targets = ["speaker", "status", "content"]
     elif type == TextType.DESCRIPTION:

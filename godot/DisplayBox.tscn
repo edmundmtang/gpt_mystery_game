@@ -43,7 +43,35 @@ size_flags_vertical = 8
 focus_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxEmpty_a5ssx")
 bbcode_enabled = true
-text = "This is some display text."
+text = "This is some display text. 
+
+You examine the room and all the people.
+
+The room is elegantly decorated, with chandeliers hanging from the ceiling and expensive artwork adorning the walls. The dining table is set with fine china and silverware. The guests are all dressed in their finest attire, engaged in hushed conversations and sipping on their drinks.
+
+Lord Archibald Thornton stands tall and regal, his gray hair neatly combed back. He looks visibly distraught, as his prized heirloom has gone missing.
+
+Lady Eleanor Thornton, a young and vibrant woman, is trying her best to console her father. She appears worried but determined.
+
+Mr. Samuel Blackwood, the loyal butler, stands by Lord Thornton's side. He seems nervous, his eyes darting around the room.
+
+Miss Clara Dawson, the new governess, stands beside Lady Eleanor. She wears a calm expression, but her eyes betray a hint of something else.
+
+Dr. Alexander Mills, the town's esteemed physician, stands near the broken display case. He seems lost in thought, occasionally glancing at his coat pocket.
+
+You examine the room and all the people.
+
+The room is elegantly decorated, with chandeliers hanging from the ceiling and expensive artwork adorning the walls. The dining table is set with fine china and silverware. The guests are all dressed in their finest attire, engaged in hushed conversations and sipping on their drinks.
+
+Lord Archibald Thornton stands tall and regal, his gray hair neatly combed back. He looks visibly distraught, as his prized heirloom has gone missing.
+
+Lady Eleanor Thornton, a young and vibrant woman, is trying her best to console her father. She appears worried but determined.
+
+Mr. Samuel Blackwood, the loyal butler, stands by Lord Thornton's side. He seems nervous, his eyes darting around the room.
+
+Miss Clara Dawson, the new governess, stands beside Lady Eleanor. She wears a calm expression, but her eyes betray a hint of something else.
+
+Dr. Alexander Mills, the town's esteemed physician, stands near the broken display case. He seems lost in thought, occasionally glancing at his coat pocket."
 fit_content = true
 context_menu_enabled = true
 selection_enabled = true
