@@ -13,6 +13,9 @@ enum placeholder_state {
 }
 
 func _ready() -> void:
+    set_start_state()
+
+func set_start_state() -> void:
     set_placeholder_text(placeholder_state.NAME)
 
 func process_command() -> void:

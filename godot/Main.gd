@@ -98,6 +98,8 @@ func handle_navigation_event(type: int) -> void:
         DisplayBox.navigation.RESTART:
             if GameState.debug:
                 print("Navigation Event: RESTART")
+            GameState.restart_game()
+            display_box.start_scenario()
         DisplayBox.navigation.EXIT:
             if GameState.debug:
                 print("Navigation Event: EXIT")

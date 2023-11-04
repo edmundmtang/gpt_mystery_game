@@ -61,4 +61,8 @@ func restart_game() -> void:
     messages = []
     display_messages = []
     display_index = -1
+    max_display_index = -1
     player_name = ""
+    has_unread_messages = false
+    generating_output = false
+    is_on_information = false # displaying information text

@@ -56,6 +56,7 @@ func start_scenario():
     # Clear player name
     # Set input box to state for receiving a new name
     add_display_messages([{"description": introduction}], ChatGenerator.TextType.DESCRIPTION)
+    do_update_navigation()
 
 func show_instructions():
     if len(GameState.display_messages) > instruction_index:
