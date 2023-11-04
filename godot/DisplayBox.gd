@@ -55,7 +55,7 @@ func _ready():
 func start_scenario():
     # Clear player name
     # Set input box to state for receiving a new name
-    add_display_messages([{"description": introduction}], ChatGenerator.TextType.DESCRIPTION)
+    add_display_messages([{"description": introduction}], ChatGenerator.TextType.INFORMATION)
     do_update_navigation()
 
 func show_instructions():
@@ -63,18 +63,21 @@ func show_instructions():
         text_box.text = GameState.display_messages[instruction_index]
     else:
         var instructions: String = "As Detective " + GameState.player_name + ", you have arrived at Thornton Manor to help solve a mysterious theft. To interact with the scenario you will need to type out commands in a particular format in the box below. All commands begin with a slash followed by the command itself then further details or instructions. For example, if you want to introduce yourself, it would look something like this:\n\n/say Hello, I am Detective " + GameState.player_name + ".\n\nYou can interact with the scenario by either saying something (/say) or examining something (/examine). For more commands, hotkeys, and further information, type '/help'."
-        add_display_messages([{"description": instructions}], ChatGenerator.TextType.DESCRIPTION)
+        add_display_messages([{"description": instructions}], ChatGenerator.TextType.INFORMATION)
         instruction_index = len(GameState.display_messages) - 1 # is the newest message
         GameState.is_on_information = false
 
 func add_display_messages(messages: Array[Dictionary], type: int) -> void:
+    print(messages)
     # Format and add messages array to GameState.display_messages
+    if (GameState.last_message_type == ChatGenerator.TextType.DESCRIPTION
+        or GameState.last_message_type == ChatGenerator.TextType.DESCRIPTION_REQUEST):
+        pass
+    else:
+        GameState.display_index += 1
     for message in messages:
         var formatted_message = format_message(message, type)
-        GameState.add_display_message(formatted_message)
-    # Figure out the appropriate max index based on number of new messages
-    # Update display message index by 1 then use update_display() to update view
-    GameState.display_index += 1
+        GameState.add_display_message(formatted_message, type)
     if GameState.display_index < GameState.max_display_index:
         GameState.has_unread_messages = true
     update_display()
@@ -99,7 +102,14 @@ func format_message(message: Dictionary, type: int) -> String:
     # take message as a dictionary then format it as BBCode to use in display
     var res: String
     match type:
+        ChatGenerator.TextType.DESCRIPTION_REQUEST:
+            type = ChatGenerator.TextType.DESCRIPTION
+        ChatGenerator.TextType.CONVERSATION_REQUEST:
+            type = ChatGenerator.TextType.CONVERSATION
+    match type:
         ChatGenerator.TextType.DESCRIPTION:
+            res = "[left]" + message["description"] + "[/left]"
+        ChatGenerator.TextType.INFORMATION:
             res = "[left]" + message["description"] + "[/left]"
         ChatGenerator.TextType.CONVERSATION:
             res = "[left][u][b]" + message["speaker"] + "[/b][/u]"
@@ -110,7 +120,7 @@ func format_message(message: Dictionary, type: int) -> String:
 
 func do_update_navigation() -> void:
     if GameState.debug:
-        print("Current Location: ", GameState.display_index, "/", GameState.max_display_index)
+        print("Current Location: ", GameState.display_index + 1, "/", GameState.max_display_index + 1)
     if GameState.display_index <= 0:
         back_button.disabled = true
     else:

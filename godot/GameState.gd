@@ -11,6 +11,7 @@ var player_name: String
 var has_unread_messages := false
 var generating_output := false
 var is_on_information := false # displaying information text
+var last_message_type : int = ChatGenerator.TextType.NONE
 
 func _ready() -> void:
     load_context("context.json")
@@ -30,14 +31,20 @@ func insert_player_name() -> void:
 
 func add_new_output_message(new_message: String) -> void:
     messages.append(new_message)
-    # parse new_message and also add to display messages
 
 func fetch_display_message() -> String:
     return display_messages[display_index]
 
-func add_display_message(message: String) -> void:
-    display_messages.append(message)
-    max_display_index += 1
+func add_display_message(message: String, type: int) -> void:
+    if (type == ChatGenerator.TextType.DESCRIPTION
+        and last_message_type == ChatGenerator.TextType.DESCRIPTION or last_message_type == ChatGenerator.TextType.DESCRIPTION_REQUEST):
+        var last_message = display_messages.pop_back()
+        last_message += "\n\n" + message
+        display_messages.append(last_message)
+    else:
+        display_messages.append(message)
+        max_display_index += 1
+    last_message_type = type
 
 func go_previous() -> void:
     if GameState.is_on_information:
@@ -66,3 +73,4 @@ func restart_game() -> void:
     has_unread_messages = false
     generating_output = false
     is_on_information = false # displaying information text
+    last_message_type = ChatGenerator.TextType.NONE

@@ -42,11 +42,11 @@ func process_command() -> void:
         match command:
             "/say":
                 GameState.generating_output = true
-                var text_type = ChatGenerator.TextType.CONVERSATION
+                var text_type = ChatGenerator.TextType.CONVERSATION_REQUEST
                 command_event.emit(command_text, text_type)
             "/examine":
                 GameState.generating_output = true
-                var text_type = ChatGenerator.TextType.DESCRIPTION
+                var text_type = ChatGenerator.TextType.DESCRIPTION_REQUEST
                 command_event.emit(command_text, text_type)
             "/instructions":
                 navigation_event.emit(DisplayBox.navigation.INSTRUCTIONS)
