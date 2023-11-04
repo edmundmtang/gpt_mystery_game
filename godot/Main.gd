@@ -66,22 +66,32 @@ func _ready() -> void:
 func handle_navigation_event(type: int) -> void:
     match type:
         DisplayBox.navigation.INSTRUCTIONS:
-            display_box.show_instructions()
             if GameState.debug:
                 print("Navigation Event: INSTRUCTIONS")
+            display_box.display_information(type)
+        DisplayBox.navigation.INVALID:
+            if GameState.debug:
+                print("Navigation Event: INVALID")
+            input_box.set_placeholder_text(InputBox.placeholder_state.INVALID)
+        DisplayBox.navigation.HELP:
+            if GameState.debug:
+                print("Navigation Event: HELP")
+            display_box.display_information(type)
         DisplayBox.navigation.BACK:
-            GameState.go_previous()
-            display_box.update_display()
             if GameState.debug:
                 print("Navigation Event: BACK")
-        DisplayBox.navigation.NEXT:
-            GameState.go_next()
+            GameState.go_previous()
             display_box.update_display()
+        DisplayBox.navigation.NEXT:
             if GameState.debug:
                 print("Navigation Event: NEXT")
+            GameState.go_next()
+            display_box.update_display()
         DisplayBox.navigation.CURRENT:
             if GameState.debug:
                 print("Navigation Event: CURRENT")
+            GameState.go_to(GameState.max_display_index)
+            display_box.update_display()
         DisplayBox.navigation.SUMMARY:
             if GameState.debug:
                 print("Navigation Event: SUMMARY")

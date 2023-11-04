@@ -21,8 +21,8 @@ GameState="*res://GameState.gd"
 
 [display]
 
-window/size/viewport_width=450
-window/size/viewport_height=800
+window/size/viewport_width=550
+window/size/viewport_height=900
 
 [input]
 

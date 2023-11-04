@@ -10,6 +10,7 @@ var max_display_index := -1
 var player_name: String
 var has_unread_messages := false
 var generating_output := false
+var is_on_information := false # displaying information text
 
 func _ready() -> void:
     load_context("context.json")
@@ -39,10 +40,16 @@ func add_display_message(message: String) -> void:
     max_display_index += 1
 
 func go_previous() -> void:
+    if GameState.is_on_information:
+        GameState.is_on_information = false
+        return
     display_index -= 1
     if display_index < 0: display_index = 0
 
 func go_next() -> void:
+    if GameState.is_on_information:
+        GameState.is_on_information = false
+        return
     display_index += 1
     if display_index > max_display_index: display_index = max_display_index
 

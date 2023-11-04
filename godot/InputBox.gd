@@ -1,3 +1,4 @@
+class_name InputBox
 extends MarginContainer
 
 signal command_event(text: String, type: int)
@@ -5,29 +6,19 @@ signal navigation_event(event_id: int)
 @onready var text_box = %TextBox
 @onready var send_button = %SendButton
 
-var instructions := """=== Text Commands ===
-/help           : Show available commands.
-/say [text]     : Say something. [text] is what you're saying.
-/examine [text] : Examine something. [text] is the thing to examine.
-/previous       : Go to the previous page in the story.
-/next           : Go to the next page in the story.
-/current        : Go to the most recent page in the story.
-/summary        : Generate a summary of events so far.
-/restart        : Restart the scenario.
-/exit           : Get a summary of the ending then exit the game.
-
-=== Hotkeys ===
-Enter           : Send command.
-CTRL+Backspace  : Go to the previous page in the story.
-CTRL+Enter      : Go to the next page in the story."""
+enum placeholder_state {
+    DEFAULT,
+    NAME,
+    INVALID
+}
 
 func _ready() -> void:
-    set_waiting_for_player_name()
+    set_placeholder_text(placeholder_state.NAME)
 
 func process_command() -> void:
+    set_placeholder_text(placeholder_state.DEFAULT)
     if GameState.player_name == "":
         update_player_name()
-        set_default_placeholder_text()
         navigation_event.emit(DisplayBox.navigation.INSTRUCTIONS)
         if GameState.debug:
             print("Player name set to: " + GameState.player_name)
@@ -44,10 +35,8 @@ func process_command() -> void:
                 accept_event()
                 return
         if GameState.debug:
-            print("COMMAND: [", command, "] [", command_text, "]")
+            print("Command: [", command, "] [", command_text, "]")
         match command:
-            "/help":
-                print(instructions)
             "/say":
                 GameState.generating_output = true
                 var text_type = ChatGenerator.TextType.CONVERSATION
@@ -56,6 +45,10 @@ func process_command() -> void:
                 GameState.generating_output = true
                 var text_type = ChatGenerator.TextType.DESCRIPTION
                 command_event.emit(command_text, text_type)
+            "/instructions":
+                navigation_event.emit(DisplayBox.navigation.INSTRUCTIONS)
+            "/help":
+                navigation_event.emit(DisplayBox.navigation.HELP)
             "/previous":
                 navigation_event.emit(DisplayBox.navigation.BACK)
             "/next":
@@ -74,8 +67,7 @@ func process_command() -> void:
                     navigation_event.emit(DisplayBox.navigation.NEXT)
                     return
                 else:
-                    print("Invalid command")
-                    pass
+                    navigation_event.emit(DisplayBox.navigation.INVALID)
     call_deferred("clear_text")
 
 func update_player_name():
@@ -85,11 +77,14 @@ func update_player_name():
 func clear_text() -> void:
     text_box.clear()
 
-func set_waiting_for_player_name():
-    text_box.placeholder_text = "Enter player name here."
-
-func set_default_placeholder_text():
-    text_box.placeholder_text = "Waiting for command...\nUse /help to see commands and other info."
+func set_placeholder_text(type: int) -> void:
+    match type:
+        placeholder_state.DEFAULT:
+            text_box.placeholder_text = "Waiting for command...\nUse /help to see commands and other info."
+        placeholder_state.NAME:
+            text_box.placeholder_text = "Enter player name here."
+        placeholder_state.INVALID:
+            text_box.placeholder_text = """Unable to process command. Please rewrite and try again.\nUse \"help\" for more information."""
 
 func update_confirmation_button() -> void:
     if GameState.has_unread_messages:
