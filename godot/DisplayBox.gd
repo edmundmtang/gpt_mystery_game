@@ -28,7 +28,6 @@ enum navigation {
     RESTART,
     EXIT,
     INVALID,
-    LM_ERROR,
 }
 
 const help_text := """[center]=== Text Commands ===[/center]
@@ -46,6 +45,8 @@ const help_text := """[center]=== Text Commands ===[/center]
 Enter - Send command.
 CTRL+Backspace - Go to the previous page in the story.
 CTRL+Enter - Go to the next page in the story."""
+
+const error_text := "An error was encountered while attempting to generate a response. Please reword your command and try again."
 
 func _ready():
     start_scenario()
@@ -80,7 +81,6 @@ func show_instructions():
 
 func add_display_messages(messages: Array[Dictionary], type: int) -> void:
     # Format and add messages array to GameState.display_messages
-    print(GameState.last_message_type, "|", type)
     if GameState.last_message_type == ChatGenerator.TextType.DESCRIPTION_REQUEST:
         is_generating_description = true
     else:
@@ -103,6 +103,10 @@ func update_display() -> void:
             text_box.visible_characters = 0
         else:
             is_generating_description = false
+    else:
+        text_box.visible_characters = -1
+        is_growing_text = false
+    display_message["is_new"] = false
     if GameState.display_index == GameState.max_display_index:
         GameState.has_unread_messages = false
     update_navigation.emit()
@@ -112,9 +116,12 @@ func grow_text() -> void:
     text_box.visible_characters += 1
     if text_box.visible_characters >= len(text_box.text):
         is_growing_text = false
-        GameState.display_messages[GameState.display_index]["is_new"] = false
     # play sounds while adding text
     # possibly scroll box down if the text gets long
+
+func set_text_full() -> void:
+    text_box.visible_characters = -1
+    is_growing_text = false
 
 func display_information(type: int) -> void:
     GameState.is_on_information = true
@@ -123,6 +130,8 @@ func display_information(type: int) -> void:
             show_instructions()
         navigation.HELP:
             text_box.text = help_text
+        navigation.INVALID:
+            text_box.text = error_text
 
 func format_message(message: Dictionary, type: int) -> String:
     # take message as a dictionary then format it as BBCode to use in display

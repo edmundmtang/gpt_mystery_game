@@ -2,7 +2,7 @@ class_name ChatGenerator
 extends Node
 
 var openai_api: OpenAI_API
-var retry_counter := 0
+var json := JSON.new()
 
 enum TextType {
     INFORMATION,
@@ -18,6 +18,7 @@ enum TextType {
 signal new_display_message(text: Array[Dictionary], type: int)
 signal new_input_message(text: Dictionary, type: int)
 signal new_output_message(text: Dictionary, type: int)
+signal lm_error()
 
 func _ready() -> void:
     openai_api = OpenAI_API.new()
@@ -75,7 +76,7 @@ func get_base_context(type: int) -> String:
         push_error("Invalid text type provided.")
     return res
 
-func continue_text(type: int) -> void:
+func continue_text(type: int, retry_counter: int = 0) -> void:
     var message_array := prepare_messages(type)
     openai_api.do_chat_completion(message_array)
     var new_output = await openai_api.chat_response
@@ -86,16 +87,17 @@ func continue_text(type: int) -> void:
         new_output_message.emit(new_output, output_type)
         GameState.generating_output = false
     else:
-        # False: increase the retry_counter -> if too high push_error
-        # otherwise, call continue_text again & hope we randomly do better
         retry_counter += 1
-        if retry_counter > 3:
+        if GameState.debug:
+            print("Failed to generate a response. Attempts so far: ", retry_counter)
+        if retry_counter > 2:
             print("Failed to generate a properly formatted response after 3 attempts")
             # To-Do Instead of pushing an error, show a message suggesting the
             # user attempt to reword their request while also removing the most
             # recent request
-            DisplayBox.navigation_event.emit(DisplayBox.navigation.LM_ERROR)
-        continue_text(type)
+            lm_error.emit()
+            return
+        continue_text(type, retry_counter) # just try again
     retry_counter = 0
 
 func reduce_context() -> void:
@@ -113,13 +115,11 @@ func summarize_text(is_end: bool = false) -> String:
 
 func verify_output_message(message, type) -> bool:
     # Take JSON string and verify that it has the necessary keys
-    var data = JSON.parse_string(message)
     var targets := []
-    print(data)
-    if data == null or !(data is Array):
-        if GameState.debug:
-            print("Output message could not be parsed. Output message below.")
-            print(message)
+    if json.parse(message) != 0:
+#        if GameState.debug:
+#            print("Output message could not be parsed. Output message below.")
+#            print(message)
         return false
     if type == TextType.CONVERSATION:
         targets = ["speaker", "status", "content"]
@@ -129,7 +129,7 @@ func verify_output_message(message, type) -> bool:
         push_error("Invalid text type provided.")
         return false
     for target in targets:
-        for item in data:
+        for item in json.data:
             if target in item.keys():
                 pass
             else:

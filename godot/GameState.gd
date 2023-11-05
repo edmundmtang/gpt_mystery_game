@@ -46,7 +46,7 @@ func add_display_message(message: String, type: int) -> void:
         max_display_index += 1
     last_message_type = type
 
-func go_previous() -> void:
+func go_back() -> void:
     if GameState.is_on_information:
         GameState.is_on_information = false
         return

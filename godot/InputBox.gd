@@ -22,9 +22,6 @@ func process_command() -> void:
     set_placeholder_text(placeholder_state.DEFAULT)
     if GameState.player_name == "":
         update_player_name()
-        navigation_event.emit(DisplayBox.navigation.INSTRUCTIONS)
-        if GameState.debug:
-            print("Player name set to: " + GameState.player_name)
     else:
         var input_array := Array(text_box.text.strip_edges().split(" "))
         var command : String = input_array.pop_front().to_lower()
@@ -73,9 +70,16 @@ func process_command() -> void:
                     navigation_event.emit(DisplayBox.navigation.INVALID)
     call_deferred("clear_text")
 
-func update_player_name():
+func update_player_name() -> void:
     GameState.player_name = " ".join(Array(text_box.text.strip_edges().split(" "))) # Clean white space
     GameState.insert_player_name()
+    if GameState.player_name == "":
+        # Raise some issue with not having a proper name and do not advance
+        print("No player name set. Please try again.")
+        return
+    navigation_event.emit(DisplayBox.navigation.INSTRUCTIONS)
+    if GameState.debug:
+        print("Player name set to: " + GameState.player_name)
 
 func clear_text() -> void:
     text_box.clear()

@@ -18,14 +18,21 @@ func parse_key_input(input_event) -> void:
         return
     if input_event.keycode == 4194309: # Enter key
         if input_event.ctrl_pressed:
-            handle_navigation_event(DisplayBox.navigation.NEXT)
+            if display_box.is_growing_text:
+                display_box.set_text_full()
+            else:
+                handle_navigation_event(DisplayBox.navigation.NEXT)
             accept_event()
         else:
             if input_event.shift_pressed:
                 # Actually do nothing and just make a new line
                 pass
             else:
-                input_box.process_command()
+                if display_box.is_growing_text:
+                    display_box.set_text_full()
+                    accept_event()
+                else:
+                    input_box.process_command()
     if input_event.keycode == 4194308: # Backspace key
         if input_event.ctrl_pressed == true:
             handle_navigation_event(DisplayBox.navigation.BACK)
@@ -62,6 +69,10 @@ func _ready() -> void:
         func(message: Dictionary, _type: int) -> void:
             GameState.messages.append(message)
     )
+    chat_generator.lm_error.connect(
+        func() -> void:
+            handle_lm_error()
+    )
 
 func handle_navigation_event(type: int) -> void:
     match type:
@@ -80,7 +91,7 @@ func handle_navigation_event(type: int) -> void:
         DisplayBox.navigation.BACK:
             if GameState.debug:
                 print("Navigation Event: BACK")
-            GameState.go_previous()
+            GameState.go_back()
             display_box.update_display()
         DisplayBox.navigation.NEXT:
             if GameState.debug:
@@ -103,3 +114,14 @@ func handle_navigation_event(type: int) -> void:
         DisplayBox.navigation.EXIT:
             if GameState.debug:
                 print("Navigation Event: EXIT")
+
+func handle_lm_error() -> void:
+    if GameState.debug:
+        print("The language model ran into problems after successive attempts at generating a response.")
+    # remove most recent message from messages
+    GameState.messages.pop_back()
+    GameState.go_back()
+    GameState.display_messages.pop_back()
+    display_box.display_information(DisplayBox.navigation.INVALID)
+    # change input box to show error
+    input_box.set_placeholder_text(InputBox.placeholder_state.INVALID)
