@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dcapqng5urvxd"]
 
-[ext_resource type="Script" path="res://DisplayBox.gd" id="1_cnlj2"]
+[ext_resource type="Script" path="res://ui/DisplayBox.gd" id="1_cnlj2"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_a5ssx"]
 

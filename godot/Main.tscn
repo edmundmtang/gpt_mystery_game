@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://dggdyyxnff8bj"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_rq7rg"]
-[ext_resource type="PackedScene" uid="uid://dcapqng5urvxd" path="res://DisplayBox.tscn" id="2_8sbjh"]
-[ext_resource type="PackedScene" uid="uid://bs5drdlrq1u87" path="res://ChatGenerator.tscn" id="2_m1dq2"]
-[ext_resource type="PackedScene" uid="uid://bwvcrvsm8mibt" path="res://InputBox.tscn" id="3_6jfpu"]
+[ext_resource type="PackedScene" uid="uid://dcapqng5urvxd" path="res://ui/DisplayBox.tscn" id="2_52vw4"]
+[ext_resource type="PackedScene" uid="uid://bwvcrvsm8mibt" path="res://ui/InputBox.tscn" id="3_uy385"]
+[ext_resource type="PackedScene" uid="uid://bs5drdlrq1u87" path="res://lm/ChatGenerator.tscn" id="4_utjx3"]
 
 [node name="Main" type="MarginContainer"]
 anchors_preset = 15
@@ -20,11 +20,11 @@ script = ExtResource("1_rq7rg")
 [node name="Display" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="DisplayBox" parent="Display" instance=ExtResource("2_8sbjh")]
+[node name="DisplayBox" parent="Display" instance=ExtResource("2_52vw4")]
 layout_mode = 2
-size_flags_stretch_ratio = 2.5
+size_flags_stretch_ratio = 2.0
 
-[node name="InputBox" parent="Display" instance=ExtResource("3_6jfpu")]
+[node name="InputBox" parent="Display" instance=ExtResource("3_uy385")]
 layout_mode = 2
 
-[node name="ChatGenerator" parent="." instance=ExtResource("2_m1dq2")]
+[node name="ChatGenerator" parent="." instance=ExtResource("4_utjx3")]

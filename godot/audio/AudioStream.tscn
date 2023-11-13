@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://cpb0bo80quhcs"]
+
+[node name="AudioStream" type="AudioStreamPlayer"]

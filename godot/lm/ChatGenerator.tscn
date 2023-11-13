@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bs5drdlrq1u87"]
 
-[ext_resource type="Script" path="res://ChatGenerator.gd" id="1_7l18s"]
+[ext_resource type="Script" path="res://lm/ChatGenerator.gd" id="1_7l18s"]
 
 [node name="ChatGenerator" type="Node"]
 script = ExtResource("1_7l18s")
