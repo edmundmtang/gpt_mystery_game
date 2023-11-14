@@ -57,17 +57,20 @@ func _ready():
     back_button.pressed.connect(
         func() -> void:
             navigation_event.emit(navigation.BACK)
-            typing_sound.play_sound(4)
     )
     next_button.pressed.connect(
         func() -> void:
             navigation_event.emit(navigation.NEXT)
-            typing_sound.play_sound(4)
     )
     text_panel.resized.connect(
         func() -> void:
             text_scroll.scroll_vertical += 50 # Arbitrarily num
     )
+
+    back_button.button_down.connect(typing_sound.play_random)
+    back_button.button_up.connect(typing_sound.play_random)
+    next_button.button_down.connect(typing_sound.play_random)
+    next_button.button_up.connect(typing_sound.play_random)
 
 func start_scenario():
     # Clear player name

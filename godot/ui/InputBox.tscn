@@ -42,3 +42,4 @@ size_flags_horizontal = 4
 text = "Send"
 
 [node name="TypingSound" parent="." instance=ExtResource("2_s8cx4")]
+unique_name_in_owner = true

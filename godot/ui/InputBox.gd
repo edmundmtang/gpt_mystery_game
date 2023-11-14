@@ -5,6 +5,7 @@ signal command_event(text: String, type: int)
 signal navigation_event(event_id: int)
 @onready var text_box = %TextBox
 @onready var send_button = %SendButton
+@onready var typing_sound = %TypingSound
 
 enum placeholder_state {
     DEFAULT,
@@ -14,11 +15,15 @@ enum placeholder_state {
 
 func _ready() -> void:
     set_start_state()
+    send_button.button_down.connect(typing_sound.play_random)
+    send_button.button_up.connect(typing_sound.play_random)
+    send_button.pressed.connect(process_command)
 
 func set_start_state() -> void:
     set_placeholder_text(placeholder_state.NAME)
 
 func process_command() -> void:
+    typing_sound.play_random()
     set_placeholder_text(placeholder_state.DEFAULT)
     if GameState.player_name == "":
         update_player_name()

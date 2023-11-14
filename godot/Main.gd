@@ -75,6 +75,7 @@ func _ready() -> void:
     )
 
 func handle_navigation_event(type: int) -> void:
+    display_box.typing_sound.play_random()
     match type:
         DisplayBox.navigation.INSTRUCTIONS:
             if GameState.debug:
