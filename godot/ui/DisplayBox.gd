@@ -123,7 +123,7 @@ func update_display() -> void:
 func grow_text() -> void:
     # gradually increase text_box.visible_characters
     text_box.visible_characters += 1
-    if text_box.visible_characters >= len(text_box.text):
+    if text_box.visible_ratio >= 1:
         is_growing_text = false
     # play sounds while adding text
     # possibly scroll box down if the text gets long
