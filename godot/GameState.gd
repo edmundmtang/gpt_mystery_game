@@ -47,21 +47,36 @@ func add_display_message(message: String, type: int) -> void:
     last_message_type = type
 
 func go_back() -> void:
-    if GameState.is_on_information:
-        GameState.is_on_information = false
+    if is_on_information:
+        is_on_information = false
         return
     display_index -= 1
     if display_index < 0: display_index = 0
 
 func go_next() -> void:
-    if GameState.is_on_information:
-        GameState.is_on_information = false
+    if is_on_information:
+        is_on_information = false
         return
     display_index += 1
     if display_index > max_display_index: display_index = max_display_index
 
 func go_to(index: int) -> void:
     display_index = clampi(index, 0, max_display_index)
+
+func go_to_current() -> void:
+    var target_index : int = max_display_index
+    var is_new = true
+    var check_message : Dictionary
+    while is_new:
+        check_message = display_messages[target_index]
+        is_new = check_message["is_new"]
+        if !is_new:
+            break
+        target_index -= 1
+    target_index += 1
+    go_to(target_index)
+
+
 
 func restart_game() -> void:
     load_context("context.json")

@@ -6,9 +6,9 @@ var introduction: String = "The setting is during the 19th century at a pictures
 var instruction_index := 999 # Initialize to arbitrarily large number
 var is_growing_text := false
 var ticks := 0
-var tick_spacing := 15
+var tick_spacing := 1
 var sound_tick := 0
-var sound_spacing := 150
+var sound_spacing := 4
 var is_generating_description := false
 
 @onready var text_box := %RichTextLabel
@@ -46,8 +46,9 @@ const help_text := """[center]=== Text Commands ===[/center]
 
 [center]=== Hotkeys ===[/center]
 Enter - Send command.
-CTRL+Backspace - Go to the previous page in the story.
-CTRL+Enter - Go to the next page in the story."""
+Ctrl+Backspace - Go to the previous page in the story.
+Ctrl+Enter - Go to the next page in the story.
+Ctrl+Shift+Enter - Go to the newest page in the story."""
 
 const error_text := "An error was encountered while attempting to generate a response. Please reword your command and try again."
 
@@ -138,8 +139,11 @@ func display_information(type: int) -> void:
             show_instructions()
         navigation.HELP:
             text_box.text = help_text
+            set_text_full()
         navigation.INVALID:
             text_box.text = error_text
+            set_text_full()
+
 
 func format_message(message: Dictionary, type: int) -> String:
     # take message as a dictionary then format it as BBCode to use in display
@@ -173,7 +177,7 @@ func do_update_navigation() -> void:
     else:
         next_button.disabled = false
 
-func _process(_delta) -> void:
+func _physics_process(_delta) -> void:
     # periodically call grow_text() so it doesn't blast all the letters
     if is_growing_text:
         ticks += 1

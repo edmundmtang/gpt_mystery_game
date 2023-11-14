@@ -17,22 +17,20 @@ func parse_key_input(input_event) -> void:
     if input_event.pressed == false:
         return
     if input_event.keycode == 4194309: # Enter key
-        if input_event.ctrl_pressed:
-            if display_box.is_growing_text:
-                display_box.set_text_full()
+        if display_box.is_growing_text:
+            display_box.set_text_full()
+            accept_event()
+        elif input_event.ctrl_pressed:
+            if input_event.shift_pressed:
+                handle_navigation_event(DisplayBox.navigation.CURRENT)
             else:
                 handle_navigation_event(DisplayBox.navigation.NEXT)
             accept_event()
+        elif input_event.shift_pressed:
+            # Actually do nothing and just make a new line
+            pass
         else:
-            if input_event.shift_pressed:
-                # Actually do nothing and just make a new line
-                pass
-            else:
-                if display_box.is_growing_text:
-                    display_box.set_text_full()
-                    accept_event()
-                else:
-                    input_box.process_command()
+            input_box.process_command()
     if input_event.keycode == 4194308: # Backspace key
         if input_event.ctrl_pressed == true:
             handle_navigation_event(DisplayBox.navigation.BACK)
@@ -102,7 +100,7 @@ func handle_navigation_event(type: int) -> void:
         DisplayBox.navigation.CURRENT:
             if GameState.debug:
                 print("Navigation Event: CURRENT")
-            GameState.go_to(GameState.max_display_index)
+            GameState.go_to_current()
             display_box.update_display()
         DisplayBox.navigation.SUMMARY:
             if GameState.debug:
