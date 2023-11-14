@@ -1,0 +1,26 @@
+[gd_scene load_steps=7 format=3 uid="uid://cpb0bo80quhcs"]
+
+[ext_resource type="Script" path="res://audio/TypingSound.gd" id="1_2bdcv"]
+[ext_resource type="AudioStream" uid="uid://dvjsps7kgk10f" path="res://audio/typing_01.wav" id="2_qiiwd"]
+[ext_resource type="AudioStream" uid="uid://byrfw26a6ijnc" path="res://audio/typing_02.wav" id="3_xpdmn"]
+[ext_resource type="AudioStream" uid="uid://bs5nbx1wrmr3t" path="res://audio/typing_03.wav" id="4_mckbh"]
+[ext_resource type="AudioStream" uid="uid://dsgkpe72r1oq" path="res://audio/typing_04.wav" id="5_irrdt"]
+[ext_resource type="AudioStream" uid="uid://xqnl2u0kj8ov" path="res://audio/typing_05.wav" id="6_6wr27"]
+
+[node name="TypingSound" type="Node"]
+script = ExtResource("1_2bdcv")
+
+[node name="Typing01" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_qiiwd")
+
+[node name="Typing02" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_xpdmn")
+
+[node name="Typing03" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_mckbh")
+
+[node name="Typing04" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_irrdt")
+
+[node name="Typing05" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_6wr27")

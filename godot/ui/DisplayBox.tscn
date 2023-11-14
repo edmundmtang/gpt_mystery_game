@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dcapqng5urvxd"]
+[gd_scene load_steps=4 format=3 uid="uid://dcapqng5urvxd"]
 
 [ext_resource type="Script" path="res://ui/DisplayBox.gd" id="1_cnlj2"]
+[ext_resource type="PackedScene" uid="uid://cpb0bo80quhcs" path="res://audio/TypingSound.tscn" id="2_r0h34"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_a5ssx"]
 
@@ -91,3 +92,6 @@ unique_name_in_owner = true
 layout_mode = 2
 disabled = true
 text = "Next"
+
+[node name="TypingSound" parent="." instance=ExtResource("2_r0h34")]
+unique_name_in_owner = true

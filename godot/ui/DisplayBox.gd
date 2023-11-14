@@ -7,13 +7,16 @@ var instruction_index := 999 # Initialize to arbitrarily large number
 var is_growing_text := false
 var ticks := 0
 var tick_spacing := 15
+var sound_tick := 0
+var sound_spacing := 150
 var is_generating_description := false
 
-@onready var text_box = %RichTextLabel
-@onready var back_button = %BackButton
-@onready var next_button = %NextButton
-@onready var text_panel = $VBoxContainer/ScrollContainer/PanelContainer
-@onready var text_scroll = $VBoxContainer/ScrollContainer
+@onready var text_box := %RichTextLabel
+@onready var back_button := %BackButton
+@onready var next_button := %NextButton
+@onready var text_panel := $VBoxContainer/ScrollContainer/PanelContainer
+@onready var text_scroll := $VBoxContainer/ScrollContainer
+@onready var typing_sound := %TypingSound
 
 signal navigation_event(type: int)
 signal update_navigation()
@@ -54,10 +57,12 @@ func _ready():
     back_button.pressed.connect(
         func() -> void:
             navigation_event.emit(navigation.BACK)
+            typing_sound.play_sound(4)
     )
     next_button.pressed.connect(
         func() -> void:
             navigation_event.emit(navigation.NEXT)
+            typing_sound.play_sound(4)
     )
     text_panel.resized.connect(
         func() -> void:
@@ -169,6 +174,10 @@ func _process(_delta) -> void:
     # periodically call grow_text() so it doesn't blast all the letters
     if is_growing_text:
         ticks += 1
+        sound_tick += 1
         if ticks >= tick_spacing:
             grow_text()
             ticks = 0
+        if sound_tick >= sound_spacing:
+            typing_sound.play_random()
+            sound_tick = 0

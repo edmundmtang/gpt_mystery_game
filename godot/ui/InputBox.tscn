@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://bwvcrvsm8mibt"]
+[gd_scene load_steps=4 format=3 uid="uid://bwvcrvsm8mibt"]
 
 [ext_resource type="Script" path="res://ui/InputBox.gd" id="1_3r0kw"]
+[ext_resource type="PackedScene" uid="uid://cpb0bo80quhcs" path="res://audio/TypingSound.tscn" id="2_s8cx4"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kcesp"]
 
@@ -39,3 +40,5 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 text = "Send"
+
+[node name="TypingSound" parent="." instance=ExtResource("2_s8cx4")]
