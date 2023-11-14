@@ -1,0 +1,97 @@
+[gd_scene load_steps=4 format=3 uid="uid://dcapqng5urvxd"]
+
+[ext_resource type="Script" path="res://ui/DisplayBox.gd" id="1_cnlj2"]
+[ext_resource type="PackedScene" uid="uid://cpb0bo80quhcs" path="res://audio/TypingSound.tscn" id="2_r0h34"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_a5ssx"]
+
+[node name="DisplayBox" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_cnlj2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/ScrollContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 6
+
+[node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer/ScrollContainer/PanelContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
+focus_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_a5ssx")
+bbcode_enabled = true
+text = "This is some display text. 
+
+You examine the room and all the people.
+
+The room is elegantly decorated, with chandeliers hanging from the ceiling and expensive artwork adorning the walls. The dining table is set with fine china and silverware. The guests are all dressed in their finest attire, engaged in hushed conversations and sipping on their drinks.
+
+Lord Archibald Thornton stands tall and regal, his gray hair neatly combed back. He looks visibly distraught, as his prized heirloom has gone missing.
+
+Lady Eleanor Thornton, a young and vibrant woman, is trying her best to console her father. She appears worried but determined.
+
+Mr. Samuel Blackwood, the loyal butler, stands by Lord Thornton's side. He seems nervous, his eyes darting around the room.
+
+Miss Clara Dawson, the new governess, stands beside Lady Eleanor. She wears a calm expression, but her eyes betray a hint of something else.
+
+Dr. Alexander Mills, the town's esteemed physician, stands near the broken display case. He seems lost in thought, occasionally glancing at his coat pocket.
+
+You examine the room and all the people.
+
+The room is elegantly decorated, with chandeliers hanging from the ceiling and expensive artwork adorning the walls. The dining table is set with fine china and silverware. The guests are all dressed in their finest attire, engaged in hushed conversations and sipping on their drinks.
+
+Lord Archibald Thornton stands tall and regal, his gray hair neatly combed back. He looks visibly distraught, as his prized heirloom has gone missing.
+
+Lady Eleanor Thornton, a young and vibrant woman, is trying her best to console her father. She appears worried but determined.
+
+Mr. Samuel Blackwood, the loyal butler, stands by Lord Thornton's side. He seems nervous, his eyes darting around the room.
+
+Miss Clara Dawson, the new governess, stands beside Lady Eleanor. She wears a calm expression, but her eyes betray a hint of something else.
+
+Dr. Alexander Mills, the town's esteemed physician, stands near the broken display case. He seems lost in thought, occasionally glancing at his coat pocket."
+fit_content = true
+context_menu_enabled = true
+selection_enabled = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="BackButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "Back"
+
+[node name="NextButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "Next"
+
+[node name="TypingSound" parent="." instance=ExtResource("2_r0h34")]
+unique_name_in_owner = true
