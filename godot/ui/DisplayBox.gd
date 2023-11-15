@@ -65,7 +65,7 @@ func _ready():
     )
     text_panel.resized.connect(
         func() -> void:
-            text_scroll.scroll_vertical += 50 # Arbitrarily num
+            text_scroll.scroll_vertical += 60 # Arbitrarily num
     )
 
     back_button.button_down.connect(typing_sound.play_random)
@@ -143,7 +143,6 @@ func display_information(type: int) -> void:
         navigation.INVALID:
             text_box.text = error_text
             set_text_full()
-
 
 func format_message(message: Dictionary, type: int) -> String:
     # take message as a dictionary then format it as BBCode to use in display

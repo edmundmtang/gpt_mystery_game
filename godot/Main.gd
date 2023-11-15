@@ -74,6 +74,10 @@ func _ready() -> void:
 
 func handle_navigation_event(type: int) -> void:
     display_box.typing_sound.play_random()
+    if display_box.is_growing_text:
+        display_box.set_text_full()
+        accept_event()
+        return
     match type:
         DisplayBox.navigation.INSTRUCTIONS:
             if GameState.debug:
