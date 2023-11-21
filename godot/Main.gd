@@ -12,6 +12,7 @@ func _input(event) -> void:
         parse_key_input(event)
 
 func parse_key_input(input_event) -> void:
+#    print(input_event)
     if input_event.echo == true:
         return
     if input_event.pressed == false:
@@ -45,6 +46,14 @@ func _ready() -> void:
     input_box.navigation_event.connect(
         func(type: int) -> void:
             handle_navigation_event(type)
+    )
+    input_box.send_button_pressed.connect(
+        func() -> void:
+            var virtual_input = InputEventKey.new()
+            virtual_input.keycode = 4194309
+            virtual_input.pressed = true
+            print(virtual_input)
+            parse_key_input(virtual_input)
     )
     display_box.navigation_event.connect(
         func(type: int) -> void:

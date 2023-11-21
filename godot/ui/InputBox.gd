@@ -3,6 +3,7 @@ extends MarginContainer
 
 signal command_event(text: String, type: int)
 signal navigation_event(event_id: int)
+signal send_button_pressed()
 @onready var text_box = %TextBox
 @onready var send_button = %SendButton
 @onready var typing_sound = %TypingSound
@@ -17,7 +18,10 @@ func _ready() -> void:
     set_start_state()
     send_button.button_down.connect(typing_sound.play_random)
     send_button.button_up.connect(typing_sound.play_random)
-    send_button.pressed.connect(process_command)
+    send_button.pressed.connect(
+        func() -> void:
+            send_button_pressed.emit()
+    )
 
 func set_start_state() -> void:
     set_placeholder_text(placeholder_state.NAME)
@@ -81,6 +85,7 @@ func update_player_name() -> void:
     if GameState.player_name == "":
         # Raise some issue with not having a proper name and do not advance
         print("No player name set. Please try again.")
+        set_placeholder_text(placeholder_state.NAME)
         return
     navigation_event.emit(DisplayBox.navigation.INSTRUCTIONS)
     if GameState.debug:
